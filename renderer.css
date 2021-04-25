@@ -1,0 +1,57 @@
+/* Variables */
+:root {
+	--window-width: 200px;
+	--window-height: 200px;
+}
+
+/* Helpers */
+
+* {
+	user-select: none;
+}
+
+/* Styles */
+body {
+	font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-wrap: wrap;
+	margin: 5px;
+	font-size: 12px;
+}
+
+.window {
+	width: var(--window-width);
+	height: var(--window-height);
+	border-radius: 5px;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	padding: 10px;
+}
+
+.selected {
+	background-color: rgba(0, 0, 0, 0.1);
+}
+
+.icon {
+	max-width: 20px;
+	max-height: 20px;
+}
+
+.name {
+	display: block;
+	width: calc(var(--window-width) - 20px - 20px);
+	padding-left: 5px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	text-shadow: rgba(0, 0, 0, 0.24) 0px 0px 15px;
+}
+
+.thumbnail {
+	max-width: var(--window-width);
+	max-height: 100px;
+	box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
