@@ -20,8 +20,8 @@ const updateWindowsData = (callback) => {
 		.getSources({
 			types: ["window"],
 			thumbnailSize: {
-				height: 400,
-				width: 400,
+				height: 320,
+				width: 320,
 			},
 			fetchWindowIcons: true,
 		})
@@ -54,11 +54,9 @@ ipcRenderer.on("keydown", (event, payload) => {
 				model.target++;
 				highlightWindow(model.target % model.windows.length);
 
-				const oneRow = Math.min(model.windows.length, 4);
-				const width = 200 * oneRow + 40; // +16 to account for margins
+				const oneRow = Math.min(model.windows.length, 6);
+				const width = 200 * oneRow; // +16 to account for margins
 				const height = 200 * (Math.floor((model.windows.length - 1) / oneRow) + 1);
-
-				console.log(Math.trunc(model.windows.length / oneRow), oneRow, width, height);
 
 				ipcRenderer.send("show-window", width, height);
 				break;
@@ -77,7 +75,7 @@ ipcRenderer.on("keyup", (event, payload) => {
 			ipcRenderer.send("focus", targetWindow.id.split(":")[1]);
 			model.target = 0;
 		}
-		ipcRenderer.send("hide-window");
+		//ipcRenderer.send("hide-window");
 	}
 });
 

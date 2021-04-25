@@ -1,7 +1,7 @@
 /* Variables */
 :root {
-	--window-width: 200px;
-	--window-height: 200px;
+	--window-width: 160px;
+	--window-height: 160px;
 }
 
 /* Helpers */
@@ -17,7 +17,7 @@ body {
 	align-items: center;
 	justify-content: center;
 	flex-wrap: wrap;
-	margin: 5px;
+	margin: 0px;
 	font-size: 12px;
 }
 
@@ -28,6 +28,7 @@ body {
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: center;
+	margin: 10px;
 	padding: 10px;
 }
 
@@ -41,13 +42,13 @@ body {
 }
 
 .name {
-	display: block;
 	width: calc(var(--window-width) - 20px - 20px);
 	padding-left: 5px;
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	text-shadow: rgba(0, 0, 0, 0.24) 0px 0px 15px;
+	padding-top: 2px;
 }
 
 .thumbnail {

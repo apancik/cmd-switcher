@@ -34,10 +34,7 @@ app.on("before-quit", () => {
 const createTray = () => {
 	tray = new Tray(path.join(assetsDirectory, "iconTemplate.png"));
 	tray.on("click", function (event) {
-		// Show devtools when command clicked
-		if (window.isVisible() && process.defaultApp && event.metaKey) {
-			window.openDevTools({ mode: "detach" });
-		}
+		app.quit();
 	});
 };
 
@@ -69,8 +66,8 @@ const createWindow = () => {
 // ======================
 
 ipcMain.on("show-window", (event, width, height) => {
-	console.log("setting size", width, height);
 	window.setSize(width, height);
+	window.center();
 	window.show();
 	window.focus();
 });
@@ -80,8 +77,6 @@ ipcMain.on("hide-window", () => {
 });
 
 ipcMain.on("focus", (event, id) => {
-	console.log("Received focus", id);
-
 	windowManager.getWindows().forEach((window) => {
 		if (window.id == id) {
 			console.log(window.getTitle(), window.getBounds(), window.isWindow(), window.path, window);
