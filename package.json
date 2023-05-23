@@ -1,32 +1,32 @@
 {
-	"name": "window-switcher",
-	"version": "0.0.1",
-	"main": "main.js",
-	"license": "MIT",
-	"author": "Andrej Pancik",
-	"scripts": {
-		"start": "electron .",
-		"package": "electron-packager ./ --platform=darwin --arch=x64 --out=out --icon=./icon.icns --overwrite"
-	},
-	"devDependencies": {
-		"electron": "^12.0.5",
-		"electron-packager": "^15.2.0"
-	},
-	"dependencies": {
-		"iohook": "^0.9.1",
-		"node-window-manager": "^2.2.4"
-	},
-	"iohook": {
-		"targets": [
-			"node-88",
-			"electron-87"
-		],
-		"platforms": [
-			"darwin"
-		],
-		"arches": [
-			"x64",
-			"ia32"
-		]
-	}
+  "name": "window-switcher",
+  "version": "0.0.1",
+  "main": "main.js",
+  "license": "MIT",
+  "author": "Andrej Pancik",
+  "scripts": {
+    "start": "electron .",
+    "package": "electron-packager ./ --out=out --icon=./icon.icns --overwrite"
+  },
+  "devDependencies": {
+    "electron": "12.2.3",
+    "electron-packager": "17.1.1"
+  },
+  "dependencies": {
+    "iohook": "0.9.3",
+    "node-window-manager": "2.2.4"
+  },
+  "iohook": {
+    "targets": [
+      "node-88",
+      "electron-87"
+    ],
+    "platforms": [
+      "darwin"
+    ],
+    "arches": [
+      "x64",
+      "ia32"
+    ]
+  }
 }

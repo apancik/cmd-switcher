@@ -1,123 +1,97 @@
-const { ipcRenderer, desktopCapturer } = require("electron");
+const { ipcRenderer, desktopCapturer } = require('electron')
 
 // =====
 // MODEL
 // =====
 
 let model = {
-	target: 0,
-	windows: [],
-};
+  displayed: false,
+  target: 1,
+  windows: []
+}
 
-// ==================
-// CONTROLLER METHODS
-// ==================
+// ==========
+// CONTROLLER
+// ==========
 
-const updateWindowsData = (callback) => {
-	console.log("Update windows data");
+TAB_KEYCODE = 15
+ALT_KEYCODE = 56 // 3675 for cmd
 
-	desktopCapturer
-		.getSources({
-			types: ["window"],
-			thumbnailSize: {
-				height: 320,
-				width: 320,
-			},
-			fetchWindowIcons: true,
-		})
-		.then((sources) => {
-			console.log(sources);
+ipcRenderer.on('keydown', (event, payload) => {
+  if (payload.altKey && !model.displayed) {
+    desktopCapturer
+      .getSources({
+        types: ['window'],
+        thumbnailSize: {
+          height: 200,
+          width: 200
+        },
+        fetchWindowIcons: true
+      })
+      .then(sources => {
+        model.windows = sources
 
-			model.windows = sources.map((source) => {
-				return {
-					name: source.name,
-					id: source.id,
-					thumbnail: source.thumbnail.toDataURL(),
-					appIcon: source.appIcon.toDataURL(),
-				};
-			});
-		})
-		.then(callback);
-};
+        if (model.windows.length && payload.keycode === TAB_KEYCODE) {
+          const oneRow = Math.min(model.windows.length, 6)
+          const width = 200 * oneRow // +16 to account for margins
+          const height =
+            200 * (Math.floor((model.windows.length - 1) / oneRow) + 1)
 
-// =================
-// CONTROLLER EVENTS
-// =================
+          displayWindows()
 
-TAB_KEYCODE = 15;
-ALT_KEYCODE = 56; // 3675 for cmd
+          model.displayed = true
+          ipcRenderer.send('show-window', width, height)
+        }
+      })
+  } else if (model.displayed) {
+    model.target = (model.target + 1) % model.windows.length
 
-ipcRenderer.on("keydown", (event, payload) => {
-	if (payload.altKey) {
-		switch (payload.keycode) {
-			case TAB_KEYCODE:
-				model.target++;
-				highlightWindow(model.target % model.windows.length);
+    displayWindows()
+  }
+})
 
-				const oneRow = Math.min(model.windows.length, 6);
-				const width = 200 * oneRow; // +16 to account for margins
-				const height = 200 * (Math.floor((model.windows.length - 1) / oneRow) + 1);
-
-				ipcRenderer.send("show-window", width, height);
-				break;
-			case ALT_KEYCODE:
-				// BUG race condition
-				updateWindowsData(displayWindows); // possibly first fetch without icons and thumbnails to improve performance
-				break;
-		}
-	}
-});
-
-ipcRenderer.on("keyup", (event, payload) => {
-	if (payload.altKey && payload.keycode == ALT_KEYCODE) {
-		if (model.target) {
-			const targetWindow = model.windows[model.target % model.windows.length];
-			ipcRenderer.send("focus", targetWindow.id.split(":")[1]);
-			model.target = 0;
-		}
-		//ipcRenderer.send("hide-window");
-	}
-});
+ipcRenderer.on('keyup', (event, payload) => {
+  if (payload.altKey && payload.keycode == ALT_KEYCODE) {
+    if (model.displayed) {
+      const targetWindow = model.windows[model.target]
+      ipcRenderer.send('focus', targetWindow.id.split(':')[1])
+      model.target = 1
+    }
+    ipcRenderer.send('hide-window')
+    model.displayed = false
+  }
+})
 
 // ====
 // VIEW
 // ====
 
-const highlightWindow = (n) => {
-	const allWindows = document.querySelectorAll(".window");
-
-	allWindows.forEach((window) => {
-		window.classList.remove("selected");
-	});
-
-	allWindows[n % model.windows.length].classList.add("selected");
-};
-
 const displayWindows = () => {
-	const body = document.querySelector("body");
+  let fragment = document.createDocumentFragment()
 
-	body.innerHTML = "";
+  model.windows
+    .map(source => {
+      return {
+        name: source.name,
+        thumbnail: source.thumbnail.toDataURL(),
+        appIcon: source.appIcon.toDataURL()
+      }
+    })
+    .forEach((window, index) => {
+      const windowElement = document.createElement('div')
 
-	model.windows.forEach((window) => {
-		const windowElement = document.createElement("div");
-		windowElement.classList.add("window");
+      windowElement.innerHTML = `<div class="window ${
+        index === model.target ? 'selected' : ''
+      }">
+			<img src="${window.appIcon}" class="icon" />
+			<span class="name">${window.name}</span>
+			<img src="${window.thumbnail}" class="thumbnail" />
+			</div>`
 
-		const icon = document.createElement("img");
-		icon.src = window.appIcon;
-		icon.classList.add("icon");
+      fragment.appendChild(windowElement)
+    })
 
-		const name = document.createElement("span");
-		name.textContent = window.name;
-		name.classList.add("name");
-
-		const thumbnail = document.createElement("img");
-		thumbnail.src = window.thumbnail;
-		thumbnail.classList.add("thumbnail");
-
-		windowElement.appendChild(icon);
-		windowElement.appendChild(name);
-		windowElement.appendChild(thumbnail);
-
-		body.appendChild(windowElement);
-	});
-};
+  const body = document.querySelector('body')
+  body.innerHTML = ''
+  body.appendChild(fragment)
+}
