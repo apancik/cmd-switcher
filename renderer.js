@@ -31,14 +31,13 @@ ipcRenderer.on('keydown', (event, payload) => {
       .then(sources => {
         model.windows = sources
 
-        if (model.windows.length && payload.keycode === TAB_KEYCODE) {
+        if (payload.keycode === TAB_KEYCODE) {
           const oneRow = Math.min(model.windows.length, 6)
           const width = 200 * oneRow // +16 to account for margins
           const height =
             200 * (Math.floor((model.windows.length - 1) / oneRow) + 1)
 
-          displayWindows()
-
+          renderWindows()
           model.displayed = true
           ipcRenderer.send('show-window', width, height)
         }
@@ -46,7 +45,7 @@ ipcRenderer.on('keydown', (event, payload) => {
   } else if (model.displayed) {
     model.target = (model.target + 1) % model.windows.length
 
-    displayWindows()
+    renderWindows()
   }
 })
 
@@ -57,8 +56,10 @@ ipcRenderer.on('keyup', (event, payload) => {
       ipcRenderer.send('focus', targetWindow.id.split(':')[1])
       model.target = 1
     }
+
     ipcRenderer.send('hide-window')
     model.displayed = false
+    hideWindows()
   }
 })
 
@@ -66,7 +67,12 @@ ipcRenderer.on('keyup', (event, payload) => {
 // VIEW
 // ====
 
-const displayWindows = () => {
+const hideWindows = () => {
+  const body = document.querySelector('body')
+  body.innerHTML = ''
+}
+
+const renderWindows = () => {
   let fragment = document.createDocumentFragment()
 
   model.windows

@@ -59,7 +59,7 @@ const createWindow = () => {
 
   window.loadURL(`file://${path.join(__dirname, 'renderer.html')}`)
 
-  window.openDevTools({ mode: 'detach' })
+  // window.openDevTools({ mode: 'detach' })
 }
 
 // ======================
