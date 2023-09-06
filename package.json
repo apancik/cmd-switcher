@@ -9,7 +9,7 @@
     "package": "electron-packager ./ --out=out --icon=./icon.icns --overwrite"
   },
   "devDependencies": {
-    "electron": "12.2.3",
+    "electron": "22.3.21",
     "electron-packager": "17.1.1"
   },
   "dependencies": {
